@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Umkm;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -36,16 +37,27 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // 1. Membuat User Baru
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'owner', // Default role adalah owner
+        ]);
+
+        // 2. Membuat Data UMKM Otomatis (Relasi One-to-One)
+        Umkm::create([
+            'user_id' => $user->id,
+            'nama_toko' => 'Toko ' . $user->name, // Nama default sementara
+            'status_verifikasi' => 'pending',
+            'is_open' => true,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
+        // 3. Dialihkan ke Dashboard (Breeze akan otomatis cek role lewat Middleware)
         return redirect(RouteServiceProvider::HOME);
     }
 }

@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // Menambahkan kolom 'role' ke dalam fillable
     ];
 
     /**
@@ -40,5 +41,15 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
+
+    /**
+     * RELASI DATABASE (Tugas Besar Requirement)
+     * Relasi ke UMKM (Satu User memiliki satu UMKM)
+     */
+    public function umkm()
+    {
+        return $this->hasOne(Umkm::class);
+    }
 }
