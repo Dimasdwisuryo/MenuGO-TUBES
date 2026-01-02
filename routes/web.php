@@ -14,18 +14,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Halaman utama
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Route khusus ADMIN MenuGO
+Route::middleware(['auth', 'role:admin_menugo'])->group(function () {
+    Route::get('/admin/dashboard', function () {
+        return "Halo Admin MenuGO! Kamu punya akses penuh.";
+    })->name('admin.dashboard');
+});
+
+// Route khusus OWNER UMKM
+Route::middleware(['auth', 'role:owner'])->group(function () {
+    Route::get('/owner/dashboard', function () {
+        return "Halo Pemilik UMKM! Selamat mengelola toko Anda.";
+    })->name('owner.dashboard');
+});
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
 require __DIR__.'/auth.php';
