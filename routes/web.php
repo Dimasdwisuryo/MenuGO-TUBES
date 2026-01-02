@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,29 +15,50 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Halaman utama
+/*
+|--------------------------------------------------------------------------
+| Halaman Utama Public
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Route khusus ADMIN MenuGO
-Route::middleware(['auth', 'role:admin_menugo'])->group(function () {
+/*
+|--------------------------------------------------------------------------
+| DASHBOARD (ALL AUTH USERS)
+|--------------------------------------------------------------------------
+*/
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware('auth')->name('dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN_MENUGO ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:admin_menugo'])->prefix('admin')->group(function () {
+
+    // halaman dashboard utama admin
     Route::get('/admin/dashboard', function () {
-        return "Halo Admin MenuGO! Kamu punya akses penuh.";
+        return view('admin.dashboard');
     })->name('admin.dashboard');
+
+    // CRUD User (Platform Manager)
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });
 
-// Route khusus OWNER UMKM
+/*
+|--------------------------------------------------------------------------
+| OWNER ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/owner/dashboard', function () {
         return "Halo Pemilik UMKM! Selamat mengelola toko Anda.";
     })->name('owner.dashboard');
 });
 
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
