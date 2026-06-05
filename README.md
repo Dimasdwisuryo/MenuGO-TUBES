@@ -77,7 +77,7 @@ Buka file `.env` dan sesuaikan konfigurasi database:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=menugoo
+DB_DATABASE=menugo-tubes
 DB_USERNAME=root
 DB_PASSWORD=
 ```
